@@ -39,7 +39,7 @@ To explore:
 
 2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
 
-3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements.
+3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. 
 
 4) WHAT THE HECK is going on with our server?? I don't even beleive this data... 
 
@@ -52,5 +52,7 @@ API headaches:
 3) If and when we can search users, it'd be nice to setup an examlpe of doing so in parallel or searching for ids in batch
 
 4) We should think about how the API can be helpful in terms of the "leaderboard" use case ... e.g. a query that sorts the results and returns a limited set, all on the RSC side
+
+5) What happens to this app if the API performance is slow? 
 
 ... More to come!!
