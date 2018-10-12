@@ -39,9 +39,12 @@ To explore:
 
 2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
 
-3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. 
+3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. Perhaps our client wrapper should be async? (or have that option). We could use RSC's min process option.
+
 
 4) WHAT THE HECK is going on with our server?? I don't even beleive this data... 
+
+5) What visuals or mwtrics would be helpful? Review with SE team.
 
 API headaches:
 
@@ -51,11 +54,20 @@ API headaches:
 
 3) If and when we can search users, it'd be nice to setup an examlpe of doing so in parallel or searching for ids in batch
 
-4) We should think about how the API can be helpful in terms of the "leaderboard" use case ... e.g. a query that sorts the results and returns a limited set, all on the RSC side
+4) We should think about how the API can be helpful in terms of the "leaderboard" use case ... e.g. a query that sorts the results and returns a limited set, all on the RSC side. Though this is easy in R.
 
 5) What happens to this app if the API performance is slow? 
 
 6) It'd be interesting to see how our APIs could play with
 shiny's reactivePoll instead of my dumb caching
+
+What was easy....
+
+1) Ordering, computing unique users, computing summaries, handling time
+
+2) Medium Easy: Doing "joins". (I may have done this the hard way, it would be worth revisiting tbe code to see 
+if we could actually leverage a join without our own lookup funcions we had to map over)
+
+3) Graphing and app building 
 
 ... More to come!!
