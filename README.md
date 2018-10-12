@@ -33,5 +33,24 @@ A few notes:
 instrumentation API, as well as an example of hitting the user list API.
 
 
+To explore:
 
+1) We'll want to switch out the "pull all data from DB every 5 minutes" with a more refined model that potentially pushes down some of our filtering to the API where possible. 
 
+2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
+
+3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements.
+
+4) WHAT THE HECK is going on with our server?? I don't even beleive this data... 
+
+API headaches:
+
+1) The anonymous user made things tricky
+
+2) What happens to deleted content?
+
+3) If and when we can search users, it'd be nice to setup an examlpe of doing so in parallel or searching for ids in batch
+
+4) We should think about how the API can be helpful in terms of the "leaderboard" use case ... e.g. a query that sorts the results and returns a limited set, all on the RSC side
+
+... More to come!!
