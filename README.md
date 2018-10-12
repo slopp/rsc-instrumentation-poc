@@ -13,6 +13,13 @@ the actual user list API, I had to create a csv file that contains a map of user
 This csv is used to add user guids to the instrumenmtation DB data, so that it more closely resembles the 
 data the actual API will return.
 
+3) You need to create a file called `.Renviron` that contains:
+
+```bash
+RSTUDIO_CONNECT_SERVER="your_server_url"
+RSTUDIO_CONNECT_API_KEY="your_admin_api_key"
+```
+
 3) With #1 and #2 in hand, you should be able to run the app. If you use a
 newer server where the instrumentation db contains user guids instead of ids you
 could make the code a bit simpler.
