@@ -1,0 +1,195 @@
+---
+title: "Shiny Application Usage"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    css: styles.css
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(DBI)
+library(shiny)
+library(lubridate)
+library(prettyunits)
+
+source("helpers.R")
+
+# TODO: Actually pull in the data from the API
+data <- reactive({
+  # Poll for new data every 5 minutes
+  invalidateLater(3e5)
+  # This is a fake-o stub!
+  data <- get_shiny_usage()
+  
+  data$started <- ymd_hms(data$started)
+  data$ended <- ymd_hms(data$ended)
+  data$session_duration <- data$ended - data$started
+  data
+})
+
+```
+
+
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+```{r}
+uiOutput("user_select")
+output$user_select <- renderUI({
+  user_guids <- data() %>% 
+    pull(user_guid) %>% 
+    unique()
+  usernames <- lookup_users(user_guids)
+  opts <- setNames(user_guids, usernames)
+  
+  selectizeInput('user', 'Enter Username', opts)  
+})
+
+uiOutput("app_select")
+output$app_select <- renderUI({
+  apps <- data() %>% 
+    pull(app_id) %>% 
+    unique()
+  selectizeInput('app', 'Enter App Id', apps)  
+})
+
+```
+
+This report currently only shows usage data for Shiny applications. Future versions will include data on other content types. Future versions will also use content names instead of GUIDs. Data is refreshed every 5 minutes.
+
+Column
+-----------------------------------------------------------------------
+
+### Total Visitor Time
+
+```{r}
+renderValueBox({
+ tot <- sum(data()$session_duration, na.rm = TRUE)
+ valueBox(pretty_dt(tot), "Total Visitor Time", icon = "fa-desktop", color = "#4c83b6") 
+})
+```
+
+### Total Number of Sessions
+
+```{r}
+renderValueBox({
+  sess <- nrow(data())
+ valueBox(prettyNum(sess, big.mark = ","), "Number of Sessions", icon = "fa-clock", color = "#4c83b6") 
+})
+```
+
+### Total Unique Users
+
+```{r}
+renderValueBox({
+ uni <- length(unique(data()$user_guid))
+ valueBox(uni, "Unique Users", icon = "fa-user", color = "#4c83b6") 
+})
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### Most Widely Distributed
+
+```{r}
+renderPlot({
+  data() %>% 
+    group_by(app_id) %>% 
+    summarise(tot_viewers = n_distinct(user_guid)) %>% 
+    arrange(desc(tot_viewers)) %>% 
+    head(5) %>% 
+    ggplot() + 
+      geom_bar(aes(reorder(app_id, tot_viewers), tot_viewers), stat = "identity") +
+      theme_minimal() + 
+      coord_flip() +
+      labs(
+        title = NULL,
+        y = "Unique Users",
+        x = NULL
+      )
+})    
+```
+
+### Most Opened 
+
+```{r}
+renderPlot({
+data() %>% 
+  group_by(app_id) %>% 
+  summarise(tot_opens = n()) %>% 
+  arrange(desc(tot_opens)) %>% 
+  head(5) %>% 
+  ggplot() + 
+    geom_bar(aes(reorder(app_id, tot_opens), tot_opens), stat = "identity") +
+    theme_minimal() + 
+    coord_flip() +
+    labs(
+      title = NULL,
+      y = "Unique Sessions",
+      x = NULL
+    )
+})    
+```
+
+### Users with Most Visits
+
+```{r}
+renderPlot({
+  data() %>% 
+    group_by(user_guid) %>% 
+    summarise(tot_visit = n()) %>% 
+    arrange(desc(tot_visit)) %>% 
+    head(5) %>% 
+    mutate(username = lookup_users(user_guid)) %>% 
+    ggplot() + 
+      geom_bar(aes(reorder(username, tot_visit), tot_visit), stat = "identity") +
+      theme_minimal() + 
+      coord_flip() +
+      labs(
+        title = NULL,
+        y = "Unique Sessions",
+        x = NULL
+      )
+}) 
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### App Information
+
+```{r}
+DT::renderDataTable({
+  data() %>% 
+    filter(app_id == input$app) %>% 
+    group_by(user_guid) %>% 
+    summarise(`# of Visits`= n(), 
+              `Time Spent` = pretty_dt(sum(session_duration, na.rm =  TRUE))) %>% 
+    mutate(username = lookup_users(user_guid)) %>% 
+    select(username, `# of Visits`, `Time Spent`) %>% 
+    DT::datatable(options = list(dom = "ft"))
+})
+
+```
+
+### User Information
+
+```{r}
+DT::renderDataTable({
+  data() %>% 
+    filter(user_guid == input$user) %>% 
+    group_by(app_id) %>% 
+    summarise(`# of Visits`= n(), 
+              dur = sum(session_duration, na.rm =  TRUE),
+              `Time Spent` = pretty_dt(sum(session_duration, na.rm =  TRUE))) %>% 
+    arrange(desc(dur)) %>% 
+    select(app_id, `# of Visits`, `Time Spent`) %>% 
+    DT::datatable(options = list(dom = "ft"))
+})
+```
+
