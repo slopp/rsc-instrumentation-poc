@@ -55,4 +55,7 @@ API headaches:
 
 5) What happens to this app if the API performance is slow? 
 
+6) It'd be interesting to see how our APIs could play with
+shiny's reactivePoll instead of my dumb caching
+
 ... More to come!!
