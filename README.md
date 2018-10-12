@@ -39,7 +39,7 @@ To explore:
 
 2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
 
-2.5) I want to add a period filter to the dashboard (last 30, 90, 365 days). Ideally this filter would go to the API to set 
+2) I want to add a period filter to the dashboard (last 30, 90, 365 days). Ideally this filter would go to the API to set 
 bounds on the data I pull in.
 
 3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. Perhaps our client wrapper should be async? (or have that option). We could use RSC's min process option.
@@ -47,7 +47,11 @@ bounds on the data I pull in.
 
 4) WHAT THE HECK is going on with our server?? I don't even beleive this data... 
 
-5) What visuals or mwtrics would be helpful? Review with SE team.
+5) What visuals or metrics would be helpful? Review with SE team.
+
+6) We can make the plots interactive really easily.
+
+7) Given this setup, would a RMD make more sense?
 
 API headaches:
 
