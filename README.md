@@ -39,6 +39,9 @@ To explore:
 
 2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
 
+2.5) I want to add a period filter to the dashboard (last 30, 90, 365 days). Ideally this filter would go to the API to set 
+bounds on the data I pull in.
+
 3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. Perhaps our client wrapper should be async? (or have that option). We could use RSC's min process option.
 
 
@@ -59,7 +62,9 @@ API headaches:
 5) What happens to this app if the API performance is slow? 
 
 6) It'd be interesting to see how our APIs could play with
-shiny's reactivePoll instead of my dumb caching
+shiny's reactivePoll instead of my dumb caching. Could we somehow 
+only pull in new records? At a min. we could be smarter about what triggers
+a change, rather than hard coding a cache flush every 5 mins.
 
 What was easy....
 
