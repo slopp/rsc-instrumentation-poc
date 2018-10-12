@@ -2,7 +2,7 @@
 
 This is just the beginning.
 
-To see the app in action, checkout: 
+To see the app in action, checkout: http://colorado.rstudio.com:3939/content/1560/
 
 To replicate for a different server:
 
