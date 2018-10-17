@@ -33,5 +33,50 @@ A few notes:
 instrumentation API, as well as an example of hitting the user list API.
 
 
+To explore:
+
+1) We'll want to switch out the "pull all data from DB every 5 minutes" with a more refined model that potentially pushes down some of our filtering to the API where possible. 
+
+2) This app shows everything to everyone. It'd be interesting to customize the app based on the viewing user (either from a permissions standpoint or just UX). For example, it'd be really simple to set the default selected user based on the visitor.
+
+2) I want to add a period filter to the dashboard (last 30, 90, 365 days). Ideally this filter would go to the API to set 
+bounds on the data I pull in.
+
+3) This app is slow. We should look at the performance profile and consider switching away from RMD, caching plots, and other areas of improvements. Async might make sense here. Perhaps our client wrapper should be async? (or have that option). We could use RSC's min process option.
 
 
+4) WHAT THE HECK is going on with our server?? I don't even beleive this data... 
+
+5) What visuals or metrics would be helpful? Review with SE team.
+
+6) We can make the plots interactive really easily.
+
+7) Given this setup, would a RMD make more sense?
+
+API headaches:
+
+1) The anonymous user made things tricky
+
+2) What happens to deleted content?
+
+3) If and when we can search users, it'd be nice to setup an examlpe of doing so in parallel or searching for ids in batch
+
+4) We should think about how the API can be helpful in terms of the "leaderboard" use case ... e.g. a query that sorts the results and returns a limited set, all on the RSC side. Though this is easy in R.
+
+5) What happens to this app if the API performance is slow? 
+
+6) It'd be interesting to see how our APIs could play with
+shiny's reactivePoll instead of my dumb caching. Could we somehow 
+only pull in new records? At a min. we could be smarter about what triggers
+a change, rather than hard coding a cache flush every 5 mins.
+
+What was easy....
+
+1) Ordering, computing unique users, computing summaries, handling time
+
+2) Medium Easy: Doing "joins". (I may have done this the hard way, it would be worth revisiting tbe code to see 
+if we could actually leverage a join without our own lookup funcions we had to map over)
+
+3) Graphing and app building 
+
+... More to come!!
