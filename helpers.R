@@ -74,12 +74,65 @@ get_all_users <- function(){
   result
 }
 
+# get usage data for an app, optionally filtering by content GUID
+get_shiny_usage_new <- function(content_guid = NA) {
+  connectServer <- Sys.getenv("RSTUDIO_CONNECT_SERVER")
+  apiKey <- Sys.getenv("RSTUDIO_CONNECT_API_KEY")
+  
+  
+  # get first page
+  authHeader <- httr::add_headers(Authorization = paste("Key", apiKey))
+  endpoint <- paste0(connectServer, "__api__/v1/instrumentation/shiny/usage")
+  if (!is.na(content_guid)) {
+    endpoint <- paste0(endpoint, '?content_guid=', content_guid)
+  }
+  resp <- httr::GET(
+    endpoint,
+    authHeader
+  )
+  payload <- httr::content(resp)
+  
+  #init result set
+  result <- data.frame(started = vector("character"), 
+                       content_guid = vector("character"),
+                       user_guid = vector("character"), 
+                       ended = vector("character"))
+  
+  # process first page
+  result <- rbind(result, 
+                  purrr::map_df(payload$results, 
+                                ~data.frame(started = .x$started,
+                                            content_guid = .x$content_guid,
+                                            user_guid = .x$user_guid,
+                                            ended = .x$ended)))
+  
+  # now step through the remaining audit logs
+  while (!is.null(payload$paging[["next"]])) {
+    resp <- httr::GET(payload$paging[["next"]], authHeader)
+    payload <- httr::content(resp)
+    
+    # process this page 
+    result <- rbind(result, 
+                    purrr::map_df(payload$results, 
+                                  ~data.frame(started = .x$started,
+                                              content_guid = .x$content_guid,
+                                              user_guid = .x$user_guid,
+                                              ended = .x$ended)))
+  }
+  
+  
+  #temporary till the GUID migration lands
+  add_user_guid_to_usage(results)
+}
 
 # fake implementation
-get_shiny_usage <- function() {
+get_shiny_usage <- function(content_guid = NA) {
   con <- odbc::dbConnect(RSQLite::SQLite(), "connect-instrumentation.db")
   on.exit(dbDisconnect(con))
-  usage_data <- dbReadTable(con, "shiny_app_usage")   
+  usage_data <- dbReadTable(con, "shiny_app_usage")
+  if (!is.na(content_guid)) {
+    usage_data <- usage_data[which(usage_data$app_id == content_guid),]
+  }
   add_user_guid_to_usage(usage_data)
 }
 
