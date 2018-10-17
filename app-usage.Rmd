@@ -42,27 +42,9 @@ app_data <- reactive({
 
 
 
-Inputs {.sidebar}
+Row {data-height=20}
 -----------------------------------------------------------------------
-This report shows usage data for Shiny applications. Summary data is refereshed every 5 minutes. 
 
-Begin by entering an application GUID. An app's GUID can be found at the bottom of the Info pane in application's settings panel.
-
-
-```{r}
-uiOutput("app_select")
-output$app_select <- renderUI({
-  apps <- data() %>% 
-    pull(app_id) %>% 
-    unique()
-  selectizeInput('app', 'Enter App GUID', apps)  
-})
-
-```
-
-
-Column
------------------------------------------------------------------------
 
 ### Total Visitor Time
 
@@ -78,7 +60,7 @@ renderValueBox({
 ```{r}
 renderValueBox({
   sess <- nrow(data())
- valueBox(prettyNum(sess, big.mark = ","), "Number of Sessions", icon = "fa-clock", color = "#4c83b6") 
+ valueBox(prettyNum(sess, big.mark = ","), "Total Sessions", icon = "fa-clock", color = "#4c83b6") 
 })
 ```
 
@@ -87,12 +69,31 @@ renderValueBox({
 ```{r}
 renderValueBox({
  uni <- length(unique(data()$user_guid))
- valueBox(uni, "Unique Users", icon = "fa-user", color = "#4c83b6") 
+ valueBox(uni, "Total Users", icon = "fa-user", color = "#4c83b6") 
 })
 ```
 
-Column 
+Row {data-height=15}
 -----------------------------------------------------------------------
+
+
+```{r}
+uiOutput("app_select")
+output$app_select <- renderUI({
+  apps <- data() %>% 
+    pull(app_id) %>% 
+    unique()
+  selectizeInput('app', 'App GUID (see Info Settings Panel)', apps)  
+})
+
+```
+
+
+
+Row {data-height=30}
+-----------------------------------------------------------------------
+
+
 ### Visits by User
 
 ```{r}
@@ -104,7 +105,7 @@ renderMetricsgraphics({
     mutate(username = lookup_users(user_guid)) %>% 
     select(username, visits) %>% 
     arrange(desc(visits)) %>% 
-    mjs_plot(x=visits, y=username, width=500, height=400) %>%
+    mjs_plot(x=visits, y=username) %>%
       mjs_bar() %>%
       mjs_axis_x(xax_format = 'plain')  
 })
@@ -121,14 +122,14 @@ renderMetricsgraphics({
     summarise(visits = n()) %>% 
     select(day, visits) %>% 
     mutate(day = as.Date(day)) %>% 
-    mjs_plot(x=day, y=visits, width=500, height=400) %>%
+    mjs_plot(x=day, y=visits) %>%
       mjs_line() %>% 
       mjs_axis_x(xax_format = "date")
 
 })
 ```
 
-Column 
+Row {data-height=25}
 -----------------------------------------------------------------------
 
 ### App Information
