@@ -20,22 +20,29 @@ library(prettyunits)
 
 source("helpers.R")
 
+clean_data <- function(data){
+  #TODO validate inputs
+  # this is the data frame from get_shiny_usage
+  # optionally, could add this to that function!
+  data$started <- ymd_hms(data$started)
+  data$ended <- ymd_hms(data$ended)
+  data$session_duration <- data$ended - data$started
+  filter(data, session_duration > dseconds(5))
+}
+
 # Grabs ALL the usage data 
 data <- reactive({
   # Poll for new data every 5 minutes
   invalidateLater(3e5)
-  # This is a fake-o stub!
-  data <- get_shiny_usage()
   
-  data$started <- ymd_hms(data$started)
-  data$ended <- ymd_hms(data$ended)
-  data$session_duration <- data$ended - data$started
-  data
+  get_shiny_usage() %>% 
+    clean_data()
 })
 
 # Just grabs the data for the user's selected app
 app_data <- reactive({
-  get_shiny_usage(input$app)
+  get_shiny_usage(input$app) %>% 
+    clean_data
 })
 
 ```
@@ -98,8 +105,7 @@ Row {data-height=30}
 
 ```{r}
 renderMetricsgraphics({
-  data() %>%
-    filter(app_id == input$app) %>% 
+  app_data() %>%
     group_by(user_guid) %>% 
     summarise(visits = n()) %>% 
     mutate(username = lookup_users(user_guid)) %>% 
@@ -115,8 +121,7 @@ renderMetricsgraphics({
 
 ```{r}
 renderMetricsgraphics({
-  data() %>%
-    filter(app_id == input$app) %>% 
+  app_data() %>% 
     mutate(day = round_date(started, "day")) %>% 
     group_by(day) %>% 
     summarise(visits = n()) %>% 
@@ -136,8 +141,7 @@ Row {data-height=25}
 
 ```{r}
 DT::renderDataTable({
-  data() %>% 
-    filter(app_id == input$app) %>% 
+  app_data() %>% 
     group_by(user_guid) %>% 
     summarise(`# of Visits`= n(), 
               `Time Spent` = pretty_dt(sum(session_duration, na.rm =  TRUE))) %>% 
