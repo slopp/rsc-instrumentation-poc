@@ -22,7 +22,7 @@ source("helpers.R")
 
 clean_data <- function(data){
   #TODO validate inputs
-  # this is the data frame from get_shiny_usage
+  # this function takes the data frame from get_shiny_usage
   # optionally, could add this to that function!
   data$started <- ymd_hms(data$started)
   data$ended <- ymd_hms(data$ended)
@@ -42,7 +42,7 @@ data <- reactive({
 # Just grabs the data for the user's selected app
 app_data <- reactive({
   get_shiny_usage(input$app) %>% 
-    clean_data
+    clean_data()
 })
 
 ```
@@ -88,7 +88,7 @@ Row {data-height=15}
 uiOutput("app_select")
 output$app_select <- renderUI({
   apps <- data() %>% 
-    pull(app_id) %>% 
+    pull(content_guid) %>% 
     unique()
   selectizeInput('app', 'App GUID (see Info Settings Panel)', apps)  
 })
@@ -108,7 +108,7 @@ renderMetricsgraphics({
   app_data() %>%
     group_by(user_guid) %>% 
     summarise(visits = n()) %>% 
-    mutate(username = lookup_users(user_guid)) %>% 
+    mutate(username = as.factor(lookup_users(user_guid))) %>% 
     select(username, visits) %>% 
     arrange(desc(visits)) %>% 
     mjs_plot(x=visits, y=username) %>%
