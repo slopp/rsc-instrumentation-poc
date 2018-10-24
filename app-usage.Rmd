@@ -58,7 +58,7 @@ Row {data-height=20}
 ```{r}
 renderValueBox({
  tot <- sum(data()$session_duration, na.rm = TRUE)
- valueBox(pretty_dt(tot), "Total Visitor Time", icon = "fa-desktop", color = "#4c83b6") 
+ valueBox(pretty_dt(tot, compact = TRUE), "Total Visitor Time", color = "#4c83b6") 
 })
 ```
 
@@ -67,7 +67,7 @@ renderValueBox({
 ```{r}
 renderValueBox({
   sess <- nrow(data())
- valueBox(prettyNum(sess, big.mark = ","), "Total Sessions", icon = "fa-clock", color = "#4c83b6") 
+ valueBox(prettyNum(sess, big.mark = ","), "Total Sessions", color = "#4c83b6") 
 })
 ```
 
@@ -76,7 +76,7 @@ renderValueBox({
 ```{r}
 renderValueBox({
  uni <- length(unique(data()$user_guid))
- valueBox(uni, "Total Users", icon = "fa-user", color = "#4c83b6") 
+ valueBox(uni, "Total Users", color = "#4c83b6") 
 })
 ```
 
