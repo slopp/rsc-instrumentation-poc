@@ -123,8 +123,8 @@ get_shiny_usage <- function(content_guid = NA) {
                     purrr::map_df(payload$results, 
                                   ~data.frame(started = .x$started,
                                               content_guid = .x$content_guid,
-                                              user_guid = .x$user_guid,
-                                              ended = .x$ended,
+                                              user_guid = null_char(.x$user_guid, "anonymous"),
+                                              ended = null_char(.x$ended, as.character(Sys.time())),
                                               stringsAsFactors = FALSE)))
   }
   
